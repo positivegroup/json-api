@@ -18,6 +18,7 @@
 
 use \Psr\Log\AbstractLogger;
 use \Psr\Log\LoggerAwareTrait;
+use Stringable;
 
 /**
  * @package Neomerx\JsonApi
@@ -29,7 +30,7 @@ class ProxyLogger extends AbstractLogger
     /**
      * @inheritdoc
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, string|Stringable $message, array $context = []): void
     {
         $this->logger === null ?: $this->logger->log($level, $message, $context);
     }

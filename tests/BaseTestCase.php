@@ -1,4 +1,6 @@
-<?php namespace Neomerx\Tests\JsonApi;
+<?php
+
+namespace Neomerx\Tests\JsonApi;
 
 /**
  * Copyright 2015-2017 info@neomerx.com
@@ -16,45 +18,39 @@
  * limitations under the License.
  */
 
-use \Mockery;
-use \Monolog\Logger;
-use \PHPUnit\Framework\TestCase;
-use \Monolog\Handler\StreamHandler;
-use \Neomerx\JsonApi\Factories\Factory;
-use \Neomerx\JsonApi\Encoder\EncoderOptions;
-use \Neomerx\JsonApi\Contracts\Encoder\EncoderInterface;
+use Mockery;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Neomerx\JsonApi\Contracts\Encoder\EncoderInterface;
+use Neomerx\JsonApi\Encoder\EncoderOptions;
+use Neomerx\JsonApi\Factories\Factory;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @package Neomerx\JsonApi
- */
 abstract class BaseTestCase extends TestCase
 {
     /**
      * Tear down test.
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         Mockery::close();
     }
 
     /**
-     * @param array               $schemas
-     * @param EncoderOptions|null $encodeOptions
-     *
      * @return EncoderInterface
      */
     protected function createLoggedEncoder(array $schemas, EncoderOptions $encodeOptions = null)
     {
         $factory = new Factory();
 
-        $path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'neomerx-json-api-tests.log';
+        $path = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'neomerx-json-api-tests.log';
         $log = new Logger('json-api');
         $log->pushHandler(new StreamHandler($path));
         $factory->setLogger($log);
 
         $container = $factory->createContainer($schemas);
-        $encoder   = $factory->createEncoder($container, $encodeOptions);
+        $encoder = $factory->createEncoder($container, $encodeOptions);
 
         return $encoder;
     }

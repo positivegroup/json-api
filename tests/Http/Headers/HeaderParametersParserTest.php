@@ -1,4 +1,6 @@
-<?php namespace Neomerx\Tests\JsonApi\Http\Headers;
+<?php
+
+namespace Neomerx\Tests\JsonApi\Http\Headers;
 
 /**
  * Copyright 2015-2017 info@neomerx.com
@@ -16,19 +18,16 @@
  * limitations under the License.
  */
 
-use \LogicException;
-use \Neomerx\JsonApi\Http\Request;
-use \Neomerx\JsonApi\Factories\Factory;
-use \Neomerx\Tests\JsonApi\BaseTestCase;
-use \Psr\Http\Message\ServerRequestInterface;
-use \Neomerx\JsonApi\Exceptions\JsonApiException;
-use \Neomerx\JsonApi\Contracts\Http\Headers\HeaderInterface;
-use \Neomerx\JsonApi\Contracts\Http\Headers\MediaTypeInterface;
-use \Neomerx\JsonApi\Contracts\Http\Headers\HeaderParametersParserInterface;
+use LogicException;
+use Neomerx\JsonApi\Contracts\Http\Headers\HeaderInterface;
+use Neomerx\JsonApi\Contracts\Http\Headers\HeaderParametersParserInterface;
+use Neomerx\JsonApi\Contracts\Http\Headers\MediaTypeInterface;
+use Neomerx\JsonApi\Exceptions\JsonApiException;
+use Neomerx\JsonApi\Factories\Factory;
+use Neomerx\JsonApi\Http\Request;
+use Neomerx\Tests\JsonApi\BaseTestCase;
+use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @package Neomerx\Tests\JsonApi
- */
 class HeaderParametersParserTest extends BaseTestCase
 {
     /** JSON API type */
@@ -56,24 +55,24 @@ class HeaderParametersParserTest extends BaseTestCase
     private $actrualCalls = [];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->parser = (new Factory())->createHeaderParametersParser();
 
         $this->expectedCalls = $this->actrualCalls = [
-            self::HEADER_ACCEPT       => 0,
+            self::HEADER_ACCEPT => 0,
             self::HEADER_CONTENT_TYPE => 0,
         ];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -103,7 +102,7 @@ class HeaderParametersParserTest extends BaseTestCase
      */
     public function testParseHeadersNoParams()
     {
-        $parameters = $this->parser->parse($this->prepareRequest('POST', self::TYPE, self::TYPE . ';'));
+        $parameters = $this->parser->parse($this->prepareRequest('POST', self::TYPE, self::TYPE.';'));
 
         $this->assertEquals(self::TYPE, $parameters->getContentTypeHeader()->getMediaTypes()[0]->getMediaType());
         $this->assertEquals(self::TYPE, $parameters->getAcceptHeader()->getMediaTypes()[0]->getMediaType());
@@ -132,7 +131,7 @@ class HeaderParametersParserTest extends BaseTestCase
     public function testParseHeadersWithParamsNoExtraParams()
     {
         $parameters = $this->parser->parse(
-            $this->prepareRequest('POST', self::TYPE . ';ext="ext1,ext2"', self::TYPE . ';ext=ext1')
+            $this->prepareRequest('POST', self::TYPE.';ext="ext1,ext2"', self::TYPE.';ext=ext1')
         );
 
         $contentType = $parameters->getContentTypeHeader();
@@ -151,8 +150,8 @@ class HeaderParametersParserTest extends BaseTestCase
     {
         $parameters = $this->parser->parse($this->prepareRequest(
             'POST',
-            self::TYPE . ' ;  boo = foo; ext="ext1,ext2";  foo = boo ',
-            self::TYPE . ' ; boo = foo; ext=ext1;  foo = boo'
+            self::TYPE.' ;  boo = foo; ext="ext1,ext2";  foo = boo ',
+            self::TYPE.' ; boo = foo; ext=ext1;  foo = boo'
         ));
 
         $contentType = $parameters->getContentTypeHeader();
@@ -189,7 +188,7 @@ class HeaderParametersParserTest extends BaseTestCase
     {
         $exception = null;
         try {
-            $this->parser->parse($this->prepareRequest('POST', self::TYPE . ';foo', self::TYPE, 1, 0));
+            $this->parser->parse($this->prepareRequest('POST', self::TYPE.';foo', self::TYPE, 1, 0));
         } catch (JsonApiException $exception) {
         }
 
@@ -213,12 +212,11 @@ class HeaderParametersParserTest extends BaseTestCase
     }
 
     /**
-     * @param string $method
-     * @param string $contentType
-     * @param string $accept
-     * @param int    $contentTypeTimes
-     * @param int    $acceptTimes
-     *
+     * @param  string  $method
+     * @param  string  $contentType
+     * @param  string  $accept
+     * @param  int  $contentTypeTimes
+     * @param  int  $acceptTimes
      * @return ServerRequestInterface
      */
     private function prepareRequest(
@@ -232,7 +230,7 @@ class HeaderParametersParserTest extends BaseTestCase
             return $method;
         }, function ($name) use ($accept, $contentType) {
             $headers = [
-                self::HEADER_ACCEPT       => $accept === null ? [] : [$accept],
+                self::HEADER_ACCEPT => $accept === null ? [] : [$accept],
                 self::HEADER_CONTENT_TYPE => $contentType === null ? [] : [$contentType],
             ];
 
@@ -243,7 +241,7 @@ class HeaderParametersParserTest extends BaseTestCase
             throw new LogicException();
         });
 
-        $this->expectedCalls[self::HEADER_ACCEPT]       = $acceptTimes;
+        $this->expectedCalls[self::HEADER_ACCEPT] = $acceptTimes;
         $this->expectedCalls[self::HEADER_CONTENT_TYPE] = $contentTypeTimes;
 
         return $request;

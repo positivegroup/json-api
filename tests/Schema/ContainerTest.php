@@ -38,7 +38,7 @@ class ContainerTest extends BaseTestCase
     /**
      * Set up.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->factory = new Factory();
